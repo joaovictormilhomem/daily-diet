@@ -1,68 +1,75 @@
-import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
-import { api } from "../services/api"
-import Layout from "../components/Layout"
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { api } from "../services/api";
+import Layout from "../components/Layout";
 
 export default function MealView() {
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [datetime, setDatetime] = useState("")
-  const [inDiet, setInDiet] = useState(true)
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [datetime, setDatetime] = useState("");
+  const [inDiet, setInDiet] = useState(true);
 
   async function loadMeal() {
     try {
-      const response = await api.get(`/meals/${id}`)
-      const meal = response.data
-      setName(meal.name)
-      setDescription(meal.description)
-      setDatetime(meal.datetime.slice(0, 16))
-      setInDiet(meal.inDiet)
+      const response = await api.get(`/meals/${id}`);
+      const meal = response.data;
+      setName(meal.name);
+      setDescription(meal.description);
+      const dt = new Date(meal.datetime);
+      const localISO = new Date(dt.getTime() - dt.getTimezoneOffset() * 60000)
+        .toISOString()
+        .slice(0, 16);
+      setDatetime(localISO);
+      setInDiet(meal.inDiet);
     } catch {
-      navigate("/meals")
+      navigate("/meals");
     }
   }
 
   useEffect(() => {
-    loadMeal()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    loadMeal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleUpdate(e) {
-    e.preventDefault()
-    await api.put(`/meals/${id}`, { name, description, datetime, inDiet })
-    navigate("/meals")
+    e.preventDefault();
+    await api.put(`/meals/${id}`, { name, description, datetime, inDiet });
+    navigate("/meals");
   }
 
   async function handleDelete() {
     if (confirm("Excluir esta refeição?")) {
-      await api.delete(`/meals/${id}`)
-      navigate("/meals")
+      await api.delete(`/meals/${id}`);
+      navigate("/meals");
     }
   }
 
   return (
     <Layout title="Detalhes">
-      <form onSubmit={handleUpdate} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <form
+        onSubmit={handleUpdate}
+        style={{ display: "flex", flexDirection: "column", gap: 12 }}
+      >
         <input
           type="text"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           required
         />
 
         <textarea
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           rows={3}
         />
 
         <input
           type="datetime-local"
           value={datetime}
-          onChange={e => setDatetime(e.target.value)}
+          onChange={(e) => setDatetime(e.target.value)}
           required
         />
 
@@ -97,6 +104,9 @@ export default function MealView() {
       >
         Excluir Refeição
       </button>
+      <Link to="/meals">
+        <button style={{ width: "100%", marginTop: 20 }}>Voltar</button>
+      </Link>
     </Layout>
-  )
+  );
 }

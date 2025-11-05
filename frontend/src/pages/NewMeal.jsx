@@ -1,61 +1,64 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { api } from "../services/api"
-import Layout from "../components/Layout"
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { api } from "../services/api";
+import Layout from "../components/Layout";
 
 export default function NewMeal() {
-  const navigate = useNavigate()
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [datetime, setDatetime] = useState("")
-  const [inDiet, setInDiet] = useState(true)
-  const [error, setError] = useState("")
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [datetime, setDatetime] = useState("");
+  const [inDiet, setInDiet] = useState(true);
+  const [error, setError] = useState("");
 
   async function handleCreateMeal(e) {
-    e.preventDefault()
-    setError("")
+    e.preventDefault();
+    setError("");
 
     try {
       await api.post("/meals", {
         name,
         description,
         datetime,
-        inDiet
-      })
-      navigate("/meals")
+        inDiet,
+      });
+      navigate("/meals");
     } catch (err) {
-      console.log(err)
-      setError("Erro ao salvar refeição")
+      console.log(err);
+      setError("Erro ao salvar refeição");
     }
   }
 
   return (
     <Layout title="Nova Refeição">
-      <form onSubmit={handleCreateMeal} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <form
+        onSubmit={handleCreateMeal}
+        style={{ display: "flex", flexDirection: "column", gap: 12 }}
+      >
         <input
           type="text"
           placeholder="Nome da refeição"
           value={name}
-          onChange={e => setName(e.target.value)}
+          onChange={(e) => setName(e.target.value)}
           required
         />
 
         <textarea
           placeholder="Descrição (opcional)"
           value={description}
-          onChange={e => setDescription(e.target.value)}
+          onChange={(e) => setDescription(e.target.value)}
           rows={3}
         />
 
         <input
           type="datetime-local"
           value={datetime}
-          onChange={e => setDatetime(e.target.value)}
+          onChange={(e) => setDatetime(e.target.value)}
           required
         />
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <div style={{ display: "flex", justifyContent: 'space-around' }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 4, whiteSpace: 'nowrap' }}>
             <input
               type="radio"
               name="diet"
@@ -66,7 +69,7 @@ export default function NewMeal() {
             Dentro da dieta
           </label>
 
-          <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 4, whiteSpace: 'nowrap' }}>
             <input
               type="radio"
               name="diet"
@@ -78,10 +81,15 @@ export default function NewMeal() {
           </label>
         </div>
 
-        <button type="submit">Salvar Refeição</button>
+        <div style={{ display: "flex", flexDirection: "column", justifyContent: 'center'}}>
+          <button type="submit">Salvar Refeição</button>
+          <Link to="/meals">
+            <button style={{ width: "100%", marginTop: 20 }}>Voltar</button>
+          </Link>
+        </div>
       </form>
 
       {error && <p style={{ color: "red", marginTop: 10 }}>{error}</p>}
     </Layout>
-  )
+  );
 }

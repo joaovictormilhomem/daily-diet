@@ -18,6 +18,7 @@ body {
 input, textarea, select, button {
   font-family: inherit;
   font-size: 16px;
+  resize: vertical;
 }
 
 /* Campos */
@@ -44,7 +45,6 @@ button:hover {
   background: var(--primary-light);
 }
 
-/* Botão de perigo */
 .btn-danger {
   background: var(--danger);
 }
